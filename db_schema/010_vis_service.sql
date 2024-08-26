@@ -33,8 +33,23 @@ COMMENT ON COLUMN o_topology.parent_id IS '父id';
 COMMENT ON COLUMN o_topology.remark IS '备注';
 COMMENT ON COLUMN o_topology.type IS '类型';
 
-
+create table o_dashboard(
+    id varchar(255) not null,
+    name varchar(255) not null,
+    app varchar(255) not null,
+    layout text not null,
+    created_by VARCHAR(32),
+    created_time TIMESTAMP,
+    updated_by VARCHAR(32),
+    updated_time TIMESTAMP,
+    primary key (id)
+);
+COMMENT ON COLUMN o_dashboard.id IS 'id,(app+"_"+name)';
+COMMENT ON COLUMN o_dashboard.name IS '名称';
+COMMENT ON COLUMN o_dashboard.app IS '应用';
+COMMENT ON COLUMN o_dashboard.layout IS '布局';
 -- +goose Down
 -- +goose StatementBegin
     drop table if exists o_topology;
+    drop table if exists o_dashboard;
 -- +goose StatementEnd

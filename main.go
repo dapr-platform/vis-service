@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"vis-service/api"
 	_ "vis-service/docs"
+	_ "vis-service/service"
 )
 
 var (
@@ -33,7 +34,7 @@ func main() {
 	mux := chi.NewRouter()
 	mux.Handle("/metrics", promhttp.Handler())
 	mux.Handle("/swagger*", httpSwagger.WrapHandler)
-	api.InitTopologyRoute(mux)
+	api.InitRoute(mux)
 	s := daprd.NewServiceWithMux(":"+strconv.Itoa(PORT), mux)
 	common.Logger.Debug("server start")
 	if err := s.Start(); err != nil && err != http.ErrServerClosed {
