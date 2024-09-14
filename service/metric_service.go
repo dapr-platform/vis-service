@@ -78,31 +78,43 @@ func FetchMetricRangeData(ctx context.Context, reqs *entity.QueryMetricsRangeCom
 	}
 	for _, req := range reqs.Reqs {
 
-		vector, err1 := fetchOneMetricRangeVal(ctx, req.Query, ss, se, step)
+		metrix, err1 := fetchOneMetricRangeVal(ctx, req.Query, ss, se, step)
 		if err1 != nil {
 			common.Logger.Error("fetch metric data error ", req, err1)
 			err = errors.Wrap(err1, "fetch metric data error "+req.Id)
 			return
 		}
 		oneData := make([]map[model.LabelName]any, 0)
-		for _, v := range *vector {
+
+		for _, v := range *metrix {
 			itemData := make(map[model.LabelName]any, 0)
+			var valueName model.LabelName
+			valueBit := 2
+
 			for _, resultDef := range req.ResultDefs {
 				switch resultDef.Type {
 				case "":
 				case "metric":
 					itemData[resultDef.Name] = cast.ToString(string(v.Metric[resultDef.Name]))
 				case "value":
-					bits := cast.ToInt(resultDef.DecimalPlaces)
-					if bits == 0 {
-						bits = 2
+					valueBit = cast.ToInt(resultDef.DecimalPlaces)
+					if valueBit == 0 {
+						valueBit = 2
 					}
-					itemData[resultDef.Name] = toFloat64WithBits(float64(v.Value), bits)
-				case "timestamp":
-					itemData[resultDef.Name] = v.Timestamp.Time().In(time.Local).Format("2006-01-02 15:04:05")
+					valueName = resultDef.Name
+
 				}
 
 			}
+			newValues := make([]entity.ValuePair, 0)
+			for _, vv := range v.Values {
+				newValues = append(newValues, entity.ValuePair{
+					Timestamp: vv.Timestamp.Time().In(time.Local).Format("2006-01-02 15:04:05"),
+					Value:     toFloat64WithBits(float64(vv.Value), valueBit),
+				})
+			}
+			itemData[valueName] = newValues
+
 			oneData = append(oneData, itemData)
 		}
 		data[req.Id] = oneData
@@ -120,7 +132,7 @@ func toFloat64WithBits(val float64, bits int) (v float64) {
 	return
 }
 
-func fetchOneMetricRangeVal(ctx context.Context, query string, ss time.Time, se time.Time, step time.Duration) (result *model.Vector, err error) {
+func fetchOneMetricRangeVal(ctx context.Context, query string, ss time.Time, se time.Time, step time.Duration) (result *model.Matrix, err error) {
 	data, err := monitor_client.QueryRange(ctx, query, ss, se, step)
 	if err != nil {
 		common.Logger.Error("refreshHostMetrics err", err)
@@ -128,10 +140,11 @@ func fetchOneMetricRangeVal(ctx context.Context, query string, ss time.Time, se 
 	}
 
 	switch data.Result.Type().String() {
-	case "vector":
-		vector := data.Result.(model.Vector)
-		result = &vector
+	case "matrix":
+		metrix := data.Result.(model.Matrix)
+		result = &metrix
 	}
+
 	if result == nil {
 		return nil, fmt.Errorf("unexpected result type: %s", data.Result.Type().String())
 	}

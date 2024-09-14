@@ -168,6 +168,59 @@ const docTemplate = `{
                 }
             }
         },
+        "/dashboard-data/db": {
+            "post": {
+                "description": "从DB中获取数据",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DashboardData"
+                ],
+                "summary": "DB",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "reqs",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.QueryDbReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "objects array",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/common.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "additionalProperties": true
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/common.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/dashboard-data/metric": {
             "post": {
                 "description": "从metric中获取数据",
@@ -1129,6 +1182,20 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "entity.QueryDbReq": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "select": {
+                    "type": "string"
+                },
+                "where": {
+                    "type": "string"
                 }
             }
         },

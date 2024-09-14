@@ -2,6 +2,12 @@ package entity
 
 import "github.com/prometheus/common/model"
 
+type QueryDbReq struct {
+	Select string `json:"select"`
+	From   string `json:"from"`
+	Where  string `json:"where"`
+}
+
 type QueryMetrics struct {
 	Id         string      `json:"id"`
 	Query      string      `json:"query"`
@@ -31,6 +37,11 @@ type QueryMetricsRangeCombin struct {
 	// The maximum time between two slices within the boundaries.
 	Step int `json:"step"` //单位秒
 
+}
+
+type ValuePair struct {
+	Timestamp string  `json:"timestamp"`
+	Value     float64 `json:"value"`
 }
 
 type DashboardDataResp struct {

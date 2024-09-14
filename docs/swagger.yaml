@@ -18,6 +18,15 @@ definitions:
       status:
         type: integer
     type: object
+  entity.QueryDbReq:
+    properties:
+      from:
+        type: string
+      select:
+        type: string
+      where:
+        type: string
+    type: object
   entity.QueryMetrics:
     properties:
       id:
@@ -229,6 +238,38 @@ paths:
       summary: save
       tags:
       - Dashboard
+  /dashboard-data/db:
+    post:
+      description: 从DB中获取数据
+      parameters:
+      - description: 请求参数
+        in: body
+        name: reqs
+        required: true
+        schema:
+          $ref: '#/definitions/entity.QueryDbReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: objects array
+          schema:
+            allOf:
+            - $ref: '#/definitions/common.Response'
+            - properties:
+                data:
+                  items:
+                    additionalProperties: true
+                    type: object
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.Response'
+      summary: DB
+      tags:
+      - DashboardData
   /dashboard-data/metric:
     post:
       description: 从metric中获取数据
