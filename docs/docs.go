@@ -168,7 +168,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/dashboard-data/db": {
+        "/dashboard-data/db-query": {
             "post": {
                 "description": "从DB中获取数据",
                 "produces": [

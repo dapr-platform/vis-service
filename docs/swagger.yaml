@@ -238,7 +238,7 @@ paths:
       summary: save
       tags:
       - Dashboard
-  /dashboard-data/db:
+  /dashboard-data/db-query:
     post:
       description: 从DB中获取数据
       parameters:

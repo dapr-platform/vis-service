@@ -11,7 +11,7 @@ import (
 func InitDashboardDataRoute(r chi.Router) {
 	r.Post(common.BASE_CONTEXT+"/dashboard-data/metric", dashboardMetricHandler)
 	r.Post(common.BASE_CONTEXT+"/dashboard-data/metric-range", dashboardMetricRangeHandler)
-	r.Post(common.BASE_CONTEXT+"/dashboard-data/db", dashboardDbHandler)
+	r.Post(common.BASE_CONTEXT+"/dashboard-data/db-query", dashboardDbHandler)
 
 }
 
@@ -22,7 +22,7 @@ func InitDashboardDataRoute(r chi.Router) {
 // @Param reqs body entity.QueryDbReq true "请求参数"
 // @Success 200 {object} common.Response{data=[]map[string]any} "objects array"
 // @Failure 500 {object} common.Response ""
-// @Router /dashboard-data/db [post]
+// @Router /dashboard-data/db-query [post]
 func dashboardDbHandler(w http.ResponseWriter, r *http.Request) {
 	req := &entity.QueryDbReq{}
 	err := common.ReadRequestBody(r, req)
